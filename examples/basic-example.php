@@ -16,5 +16,6 @@ $menu = new Menu(
   ]
 );
 
-$result = $menu->prompt(message: 'Choose wisely');
+$choice = $menu->prompt(message: 'Choose wisely');
 
+presentChoice(choice: $choice->value());
