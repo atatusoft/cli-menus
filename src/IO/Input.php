@@ -1,13 +1,13 @@
 #!/usr/bin/env php
 <?php
 
-namespace Atatusoft\Menus\IO;
+namespace Atatusoft\CLIMenus\IO;
 
-use Atatusoft\Menus\Util\Color;
-use Atatusoft\Menus\Util\Console;
-use Atatusoft\Menus\Util\ConsoleCursor;
-use Atatusoft\Menus\Util\Mathf;
-use Atatusoft\Menus\Util\TermInfo;
+use Atatusoft\CLIMenus\Util\Color;
+use Atatusoft\CLIMenus\Util\Console;
+use Atatusoft\CLIMenus\Util\ConsoleCursor;
+use Atatusoft\CLIMenus\Util\Mathf;
+use Atatusoft\CLIMenus\Util\TermInfo;
 use Iber\Phkey\Environment\Detector;
 use Iber\Phkey\Events\KeyPressEvent;
 
@@ -119,7 +119,12 @@ class Input
     return $response;
   }
 
-  public static function promptSelect(array $options, ?string $message = null, int &$selectedIndex = 0, bool $multiSelect = false): string|array
+  public static function promptSelect(
+    array $options,
+    ?string $message = null,
+    int &$selectedIndex = 0,
+    bool $multiSelect = false
+  ): string|array
   {
     $GLOBALS['selectedOption'] = null;
     $GLOBALS['promptOptions'] = $options;

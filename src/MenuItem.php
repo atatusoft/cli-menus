@@ -1,9 +1,9 @@
 #!/usr/bin/php
 <?php
 
-namespace Atatusoft\Menus;
+namespace Atatusoft\CLIMenus;
 
-use Atatusoft\Menus\Util\Color;
+use Atatusoft\CLIMenus\Util\Color;
 
 class MenuItem
 {

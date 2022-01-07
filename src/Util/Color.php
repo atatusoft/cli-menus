@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-namespace Atatusoft\Menus\Util;
+namespace Atatusoft\CLIMenus\Util;
 
 enum Color: string
 {

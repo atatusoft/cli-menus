@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-namespace Atatusoft\Menus\Util;
+namespace Atatusoft\CLIMenus\Util;
 
 final class Rect
 {
