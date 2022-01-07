@@ -7,3 +7,11 @@ spl_autoload_register(function ($class) {
 
   require_once $filename;
 });
+
+use Atatusoft\CLIMenus\Util\Color;
+
+function presentChoice(string|array $choice)
+{
+  $selection = is_string($choice) ? $choice : "\n" . print_r($choice, true);
+  printf("\nYou selected: %s%s%s\n", Color::LIGHT_BLUE->value, $selection, Color::RESET->value);
+}
