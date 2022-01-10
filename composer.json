@@ -1,5 +1,5 @@
 {
-    "name": "atatusoft/menus",
+    "name": "atatusoft/cli-menus",
     "description": "A simple library for building command line interface menus.",
     "type": "library",
     "require-dev": {
