@@ -1,9 +1,9 @@
 #!/usr/bin/php
 <?php
 
-namespace Atatusoft\Menus;
+namespace Atatusoft\CLIMenus;
 
-use Atatusoft\Menus\Util\Color;
+use Atatusoft\CLIMenus\Util\Color;
 
 class MenuItem
 {
@@ -59,8 +59,8 @@ class MenuItem
 
     $output =
       $withDescriptions
-      ? sprintf("\e[1;34m%-18s\e[0m%s", strval($this), $this->description())
-      : sprintf("\e[1;34m%s\e[0m", strval($this));
+      ? sprintf("%s%-18s \t%s%s", Color::LIGHT_BLUE->value, strval($this), $this->description(), Color::RESET->value)
+      : sprintf("%s%s%s", Color::LIGHT_BLUE->value, strval($this), Color::RESET->value);
 
     return $output;
   }

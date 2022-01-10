@@ -1,13 +1,14 @@
 #!/usr/bin/env php
 <?php
 
-namespace Atatusoft\Menus\IO;
+namespace Atatusoft\CLIMenus\IO;
 
-use Atatusoft\Menus\Util\Color;
-use Atatusoft\Menus\Util\Console;
-use Atatusoft\Menus\Util\ConsoleCursor;
-use Atatusoft\Menus\Util\Mathf;
-use Atatusoft\Menus\Util\TermInfo;
+use Atatusoft\CLIMenus\Util\Color;
+use Atatusoft\CLIMenus\Util\Console;
+use Atatusoft\CLIMenus\Util\ConsoleCursor;
+use Atatusoft\CLIMenus\Util\ConsoleEraser;
+use Atatusoft\CLIMenus\Util\Mathf;
+use Atatusoft\CLIMenus\Util\TermInfo;
 use Iber\Phkey\Environment\Detector;
 use Iber\Phkey\Events\KeyPressEvent;
 
@@ -119,16 +120,29 @@ class Input
     return $response;
   }
 
-  public static function promptSelect(array $options, ?string $message = null, int &$selectedIndex = 0, bool $multiSelect = false): string|array
+  public static function promptSelect(
+    array $options,
+    ?string $message = null,
+    int &$selectedIndex = 0,
+    bool $multiSelect = false
+  ): string|array
   {
     $GLOBALS['selectedOption'] = null;
     $GLOBALS['promptOptions'] = $options;
     $GLOBALS['totalOptions'] = count($options);
     $GLOBALS['selectedIndex'] = $selectedIndex;
     $GLOBALS['multiSelect'] = $multiSelect;
-    
+    $hint = $multiSelect
+      ? sprintf(
+          "(Press %s<space>%s to select, %s<a>%s to toggle all, %s<i>%s to invert selection)",
+          Color::CYAN->value, Color::RESET->value,
+          Color::CYAN->value, Color::RESET->value,
+          Color::CYAN->value, Color::RESET->value,
+        )
+      : sprintf("%s(Use arrow keys)%s", Color::DARK_WHITE->value, Color::RESET->value);
+
     $checkedOptions = [];
-    
+
     if ($multiSelect)
     {
       foreach ($options as $index => $option)
@@ -139,7 +153,7 @@ class Input
 
     $GLOBALS['checkedOptions'] = $checkedOptions;
 
-    printf("\r%s?%s %s: %s\n", Color::GREEN->value, Color::RESET->value, $message, Color::RESET->value);
+    printf("\r%s?%s %s: %s%s\n", Color::GREEN->value, Color::RESET->value, $message, $hint, Color::RESET->value);
 
     Input::printOptions(options: $options, selectedIndex: $selectedIndex);
 
@@ -160,6 +174,31 @@ class Input
 
         case 'down':
           ++$selectedIndex;
+          break;
+
+        case 'a':
+          if ($multiSelect && $checkedOptions)
+          {
+            if (self::arrayValuesIdentical(input: $checkedOptions))
+            {
+              $checkedOptions = self::invertBooleanArray(input: $checkedOptions);
+            }
+            else
+            {
+              $toggleValue = in_array(true, $checkedOptions);
+              foreach ($checkedOptions as $index => $option)
+              {
+                $checkedOptions[$index] = $toggleValue;
+              }
+            }
+          }
+          break;
+
+        case 'i':
+          if ($multiSelect && $checkedOptions)
+          {
+            $checkedOptions = self::invertBooleanArray(input: $checkedOptions);
+          }
           break;
         
         case 'space':
@@ -195,6 +234,7 @@ class Input
       : $options[$selectedIndex];
 
     ConsoleCursor::moveUp();
+    ConsoleEraser::entireLine();
     printf("\r%s?%s %s: %s%s%s\n", Color::GREEN->value, Color::RESET->value, $message, Color::LIGHT_BLUE->value, $selectedOption, Color::RESET->value);
 
     $selectedOptions = [];
@@ -235,8 +275,8 @@ class Input
       if ($multiSelect)
       {
         $prefix = $checkedOptions[$index]
-          ? sprintf("%s%s%s", Color::LIGHT_GREEN->value, '◉', Color::RESET->value)
-          : sprintf("%s%s", Color::RESET->value, '◯');
+          ? sprintf("%s%s%s", Color::LIGHT_GREEN->value, '◉ ', Color::RESET->value)
+          : sprintf("%s%s", Color::RESET->value, '◯ ');
       }
 
       $color = ($index === $selectedIndex)
@@ -271,4 +311,34 @@ class Input
     }
   }
 
+  private static function invertBooleanArray(array $input): array
+  {
+    $output = $input;
+
+    foreach ($output as $index => $entry)
+    {
+      if (is_bool($entry))
+      {
+        $output[$index] = !$entry;
+      }
+    }
+
+    return $output;
+  }
+
+  private static function arrayValuesIdentical(array $input): bool
+  {
+    $previous = 0;
+    $total = count($input);
+    for ($current = 1; $current < $total; $current++)
+    {
+      if ($input[$previous] !== $input[$current])
+      {
+        return false;
+      }
+      $previous = $current;
+    }
+
+    return true;
+  }
 }

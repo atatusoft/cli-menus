@@ -1,16 +1,17 @@
 #!/usr/bin/php
 <?php
 
-namespace Atatusoft\Menus;
+namespace Atatusoft\CLIMenus;
 
-use Atatusoft\Menus\Util\Color;
+use Atatusoft\CLIMenus\Util\Color;
 
 class MenuOptions
 {
   public function __construct(
     private ?bool $showDescriptions = null,
     private bool $showIndexes = true,
-    private Color $titleColor = Color::YELLOW
+    private Color $titleColor = Color::YELLOW,
+    private Color $selectedColor = Color::LIGHT_BLUE
   ) { }
 
   public function showDescriptions(): ?bool { return $this->showDescriptions; }

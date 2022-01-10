@@ -1,10 +1,10 @@
 #!/usr/bin/php
 <?php
 
-namespace Atatusoft\Menus;
+namespace Atatusoft\CLIMenus;
 
-use Atatusoft\Menus\IO\Input;
-use Atatusoft\Menus\Util\Color;
+use Atatusoft\CLIMenus\IO\Input;
+use Atatusoft\CLIMenus\Util\Color;
 use JetBrains\PhpStorm\Pure;
 
 class Menu

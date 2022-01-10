@@ -1,12 +1,9 @@
 #!/usr/bin/env php
 <?php
 
-require_once './vendor/autoload.php';
-require_once 'autoload.php';
-
-use Atatusoft\Menus\Menu;
-use Atatusoft\Menus\MenuItem;
-use Atatusoft\Menus\Util\Color;
+use Atatusoft\CLIMenus\Menu;
+use Atatusoft\CLIMenus\MenuItem;
+use Atatusoft\CLIMenus\Util\Color;
 
 $menu = new Menu(
   title: "The Matrix\n",
@@ -19,10 +16,6 @@ $menu = new Menu(
   ]
 );
 
-$result = $menu->prompt(message: 'Choose wisely');
+$choice = $menu->prompt(message: 'Choose wisely');
 
-// $result = $menu->helpTip();
-
-var_export($result->value());
-
-echo "\n";
+presentChoice(choice: $choice->value());
