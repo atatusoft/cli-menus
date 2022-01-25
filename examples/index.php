@@ -15,6 +15,7 @@ enum MenuTitle: string
   case ARROW_KEY = 'Keys Navigation';
   case MULTI_SELECT = 'Multiple Selections';
   case WITH_DESCRIPTIONS = 'With Descriptions';
+  case CUSTOM_CURSOR = 'Custom Cursor';
 
   function tag(): ?string
   {
@@ -23,6 +24,7 @@ enum MenuTitle: string
       self::ARROW_KEY => 'arrow-keys-example',
       self::MULTI_SELECT => 'multiselect-example',
       self::WITH_DESCRIPTIONS => 'with-descriptions-example',
+      self::CUSTOM_CURSOR => 'custom-cursor-example',
       default => null
     };
   }
@@ -35,6 +37,7 @@ $examplesMenu = new Menu(
     new MenuItem(MenuTitle::ARROW_KEY->value),
     new MenuItem(MenuTitle::MULTI_SELECT->value),
     new MenuItem(MenuTitle::WITH_DESCRIPTIONS->value),
+    new MenuItem(MenuTitle::CUSTOM_CURSOR->value),
     new MenuItem('Quit'),
   ]
 );
@@ -46,6 +49,7 @@ $filename = match ($choice->value()) {
   MenuTitle::ARROW_KEY->value => MenuTitle::ARROW_KEY->tag(),
   MenuTitle::MULTI_SELECT->value => MenuTitle::MULTI_SELECT->tag(),
   MenuTitle::WITH_DESCRIPTIONS->value => MenuTitle::WITH_DESCRIPTIONS->tag(),
+  MenuTitle::CUSTOM_CURSOR->value => MenuTitle::CUSTOM_CURSOR->tag(),
   default => null,
 };
 
