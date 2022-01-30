@@ -11,7 +11,8 @@ class MenuOptions
     private ?bool $showDescriptions = null,
     private bool $showIndexes = true,
     private Color $titleColor = Color::YELLOW,
-    private Color $selectedColor = Color::LIGHT_BLUE
+    private Color $selectedColor = Color::LIGHT_BLUE,
+    public readonly string $cursor = "❯"
   ) { }
 
   public function showDescriptions(): ?bool { return $this->showDescriptions; }
