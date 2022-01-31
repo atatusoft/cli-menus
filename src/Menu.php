@@ -10,6 +10,7 @@ use JetBrains\PhpStorm\Pure;
 class Menu
 {
   private ?MenuItem $selected = null;
+  private string $uniqueId = '';
 
   /**
    * @param array<int, MenuItem> $items
@@ -29,8 +30,15 @@ class Menu
 
       $this->addRange(items: $buffer);
     }
+
+    $this->uniqueId = uniqid('menu-');
   }
-  
+
+  public function getUniqueId(): string
+  {
+    return $this->uniqueId;
+  }
+
   public function title(): string { return $this->title; }
 
   public function setTitle(string $title): void { $this->title = $title; }
@@ -120,21 +128,36 @@ class Menu
     return $hasItem;
   }
 
-  public function add(MenuItem $item): void
+  public function add(Menu|MenuItem $item): void
   {
-    if (!key_exists($item->index(), $this->items))
+    if ($item instanceof Menu)
     {
-      $count = count($this->items) + 1;
-      if (is_null($item->index()))
+      if (!key_exists($item->getUniqueId(), $this->items))
       {
-        $item->setIndex(index: $count);
+        $this->items[$item->getUniqueId()] = $item;
       }
-      $this->items[$item->index()] = $item;
+      else
+      {
+        $errorMessage = 'WARNING: Duplicate MenuItem(' . $item->getUniqueId() . ')';
+        error_log(message: $errorMessage);
+      }
     }
     else
     {
-      $errorMessage = 'WARNING: Duplicate MenuItem(' . $item->value() . ')';
-      error_log(message: $errorMessage);
+      if (!key_exists($item->index(), $this->items))
+      {
+        $count = count($this->items) + 1;
+        if (is_null($item->index()))
+        {
+          $item->setIndex(index: $count);
+        }
+        $this->items[$item->index()] = $item;
+      }
+      else
+      {
+        $errorMessage = 'WARNING: Duplicate MenuItem(' . $item->value() . ')';
+        error_log(message: $errorMessage);
+      }
     }
   }
 
@@ -142,16 +165,20 @@ class Menu
   {
     foreach ($items as $item)
     {
-      if ($item instanceof MenuItem)
+      if ($item instanceof Menu || $item instanceof MenuItem)
       {
         $this->add(item: $item);
       }
     }
   }
 
-  public function remove(MenuItem|int $item): void
+  public function remove(Menu|MenuItem|int $item): void
   {
-    $index = ($item instanceof MenuItem) ? $item->index() : $item;
+    $index = match(true) {
+      $item instanceof Menu => $item->index(),
+      $item instanceof MenuItem => $item->index(),
+      default => $item
+    };
 
     if (isset($this->items[$index]))
     {
@@ -163,7 +190,7 @@ class Menu
   {
     foreach ($items as $item)
     {
-      if ($item instanceof MenuItem || is_integer($item))
+      if ($item instanceof Menu || $item instanceof MenuItem || is_integer($item))
       {
         $this->remove(item: $item);
       }
@@ -213,20 +240,29 @@ class Menu
   public function prompt(
     string $message = 'Choose option',
     bool $useArrowKeys = true,
-    bool $multiSelect = false
+    bool $multiSelect = false,
   ): null|MenuItem|array
   {
+    $cursor = $this->options()->cursor ?? "❯";
+
     if ($useArrowKeys)
     {
       $options = [];
 
       foreach ($this->items as $item)
       {
-        $options[] = $item->value();
+        if ($item instanceof Menu)
+        {
+          $optionsp[] = $item->title();
+        }
+        else
+        {
+          $options[] = $item->value();
+        }
       }
 
       $selectedIndex = 0;
-      $response = Input::promptSelect(options: $options, message: $message, selectedIndex: $selectedIndex, multiSelect: $multiSelect);
+      $response = Input::promptSelect(options: $options, message: $message, selectedIndex: $selectedIndex, multiSelect: $multiSelect, cursor: $cursor);
       $index = ($selectedIndex + 1);
 
       $this->selected =
