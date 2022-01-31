@@ -124,7 +124,8 @@ class Input
     array $options,
     ?string $message = null,
     int &$selectedIndex = 0,
-    bool $multiSelect = false
+    bool $multiSelect = false,
+    string $cursor = "❯",
   ): string|array
   {
     $GLOBALS['selectedOption'] = null;
@@ -155,7 +156,7 @@ class Input
 
     printf("\r%s?%s %s: %s%s\n", Color::GREEN->value, Color::RESET->value, $message, $hint, Color::RESET->value);
 
-    Input::printOptions(options: $options, selectedIndex: $selectedIndex);
+    Input::printOptions(options: $options, selectedIndex: $selectedIndex, cursor: $cursor);
 
     ConsoleCursor::setVisibility(isVisible: false);
     $detector = new Detector();
@@ -163,7 +164,7 @@ class Input
 
     $eventDispatcher = $listener->getEventDispatcher();
 
-    $eventDispatcher->addListener('key:press', function (KeyPressEvent $event) {
+    $eventDispatcher->addListener('key:press', function (KeyPressEvent $event) use ($cursor) {
       global $selectedIndex, $totalOptions, $promptOptions, $multiSelect, $checkedOptions;
 
       switch ($event->getKey())
@@ -213,7 +214,7 @@ class Input
       }
 
       $selectedIndex = Mathf::wrap($selectedIndex, 0, $totalOptions);
-      Input::printOptions(options: $promptOptions, selectedIndex: $selectedIndex);
+      Input::printOptions(options: $promptOptions, selectedIndex: $selectedIndex, cursor: $cursor);
     });
 
     $eventDispatcher->addListener('key:enter', function (KeyPressEvent $event) use ($eventDispatcher) {
@@ -257,7 +258,7 @@ class Input
     };
   }
 
-  public static function printOptions(array $options, int $selectedIndex = 0): void
+  public static function printOptions(array $options, int $selectedIndex = 0, string $cursor = "❯"): void
   {
     global $multiSelect, $checkedOptions;
     $totalOptions = count($options);
@@ -280,7 +281,7 @@ class Input
       }
 
       $color = ($index === $selectedIndex)
-        ? sprintf("%s❯%s%s ", Color::LIGHT_BLUE->value, $prefix, Color::LIGHT_BLUE->value)
+        ? sprintf("%s%s%s%s ", Color::LIGHT_BLUE->value, $cursor, $prefix, Color::LIGHT_BLUE->value)
         : sprintf("%s %s ", Color::RESET->value, $prefix);
       printf("%s%s%s\n", $color, $option, Color::RESET->value);
     }
